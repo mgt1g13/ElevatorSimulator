@@ -24,6 +24,7 @@ insidePanel* new_insidePanel(int numberOfFloors){
     new_panel->buttons = (int*)malloc(numberOfFloors*sizeof(int));
     memset(new_panel->buttons, 0, numberOfFloors*sizeof(int));
     
+    
     return new_panel;
     
 }
@@ -37,7 +38,7 @@ void insidePanel_press_button(insidePanel* panel, int floor){
 
 void insidePanel_turn_off_button(insidePanel* panel, int floor){
     
-    
+    panel->buttons[BUTTON(floor)] = 0;
     
     
 }

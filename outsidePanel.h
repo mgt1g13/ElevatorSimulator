@@ -11,4 +11,14 @@
 
 #include <stdio.h>
 
+typedef struct outsidePanel outsidePanel;
+
+
+
+void outsidePanel_turn_on_up_button(outsidePanel* panel);
+void outsidePanel_turn_off_up_button(outsidePanel* panel);
+
+void outsidePanel_turn_on_down_button(outsidePanel* panel);
+void outsidePanel_turn_off_down_button(outsidePanel* panel);
+
 #endif /* defined(__ElevatorPthreads__outsidePanel__) */
