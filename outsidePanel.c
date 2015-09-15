@@ -44,3 +44,7 @@ void outsidePanel_turn_on_down_button(outsidePanel* panel){
 void outsidePanel_turn_off_down_button(outsidePanel* panel){
     panel->downButton = 0;
 }
+
+void outsidePanel_destructor(outsidePanel* panel){
+    free(panel);
+}

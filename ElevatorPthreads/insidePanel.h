@@ -11,14 +11,19 @@
 
 #include <stdio.h>
 
+#define TERREO 0
 
 typedef struct insidePanel insidePanel;
+
+
+
 
 insidePanel* new_insidePanel(int numberOfSwitches);
 
 void insidePanel_press_button(insidePanel* panel, int floor);
-
+int insidePanel_is_button_on(insidePanel* panel, int floor);
 void insidePanel_turn_off_button(insidePanel* panel, int floor);
 
+void insidePanel_destructor(insidePanel* panel);
 
 #endif /* defined(__ElevatorPthreads__insidePanel__) */
