@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 
-#define TERREO 0
+
 
 typedef struct insidePanel insidePanel;
 

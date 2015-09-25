@@ -17,9 +17,11 @@ outsidePanel* new_outsidePanel();
 
 void outsidePanel_turn_on_up_button(outsidePanel* panel);
 void outsidePanel_turn_off_up_button(outsidePanel* panel);
+int outsidePanel_is_up_button_on(outsidePanel *panel);
 
 void outsidePanel_turn_on_down_button(outsidePanel* panel);
 void outsidePanel_turn_off_down_button(outsidePanel* panel);
+int outsidePanel_is_down_button_on(outsidePanel *panel);
 
 void outsidePanel_destructor(outsidePanel* panel);
 

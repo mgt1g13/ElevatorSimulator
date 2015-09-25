@@ -11,7 +11,11 @@
 
 #include "monitor.h"
 
+void person_visit(int seconds);
 
+void person_travel(ElevatorMonitor* monitor, int person_current_floor, int destiny);
+
+void person_end(ElevatorMonitor* monitor);
 
 
 #endif

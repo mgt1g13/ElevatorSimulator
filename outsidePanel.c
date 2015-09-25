@@ -36,6 +36,9 @@ void outsidePanel_turn_off_up_button(outsidePanel* panel){
     panel->upButton = 0;
 }
 
+int outsidePanel_is_up_button_on(outsidePanel *panel){
+    return panel->upButton;
+}
 
 void outsidePanel_turn_on_down_button(outsidePanel* panel){
     panel->downButton = 1;
@@ -44,6 +47,11 @@ void outsidePanel_turn_on_down_button(outsidePanel* panel){
 void outsidePanel_turn_off_down_button(outsidePanel* panel){
     panel->downButton = 0;
 }
+
+int outsidePanel_is_down_button_on(outsidePanel *panel){
+    return panel->downButton;
+}
+
 
 void outsidePanel_destructor(outsidePanel* panel){
     free(panel);

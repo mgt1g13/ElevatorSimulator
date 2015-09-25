@@ -8,10 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		15131E451BA5FA5E00667F73 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 15131E441BA5FA5E00667F73 /* main.c */; };
-		152FA7531BA5FDFD0000E9D3 /* libpthread.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 152FA7511BA5FC4D0000E9D3 /* libpthread.dylib */; };
 		152FA7571BA5FEBB0000E9D3 /* monitor.c in Sources */ = {isa = PBXBuildFile; fileRef = 152FA7551BA5FEBB0000E9D3 /* monitor.c */; };
 		152FA75A1BA6146C0000E9D3 /* outsidePanel.c in Sources */ = {isa = PBXBuildFile; fileRef = 152FA7581BA6146C0000E9D3 /* outsidePanel.c */; };
 		152FA75D1BA6148D0000E9D3 /* insidePanel.c in Sources */ = {isa = PBXBuildFile; fileRef = 152FA75B1BA6148D0000E9D3 /* insidePanel.c */; };
+		15A7B6731BAD01B600ED3A6F /* libpthread.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 15A7B6721BAD01B600ED3A6F /* libpthread.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -29,7 +29,6 @@
 /* Begin PBXFileReference section */
 		15131E411BA5FA5D00667F73 /* ElevatorPthreads */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ElevatorPthreads; sourceTree = BUILT_PRODUCTS_DIR; };
 		15131E441BA5FA5E00667F73 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
-		152FA7511BA5FC4D0000E9D3 /* libpthread.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpthread.dylib; path = usr/lib/libpthread.dylib; sourceTree = SDKROOT; };
 		152FA7551BA5FEBB0000E9D3 /* monitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = monitor.c; sourceTree = "<group>"; };
 		152FA7561BA5FEBB0000E9D3 /* monitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = monitor.h; sourceTree = "<group>"; };
 		152FA7581BA6146C0000E9D3 /* outsidePanel.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = outsidePanel.c; path = ../outsidePanel.c; sourceTree = "<group>"; };
@@ -38,6 +37,7 @@
 		152FA75C1BA6148D0000E9D3 /* insidePanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = insidePanel.h; sourceTree = "<group>"; };
 		15322E531BA625EF00D2F29F /* monitorElevatorSide.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = monitorElevatorSide.h; sourceTree = "<group>"; };
 		15322E541BA6260800D2F29F /* monitorUserSide.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = monitorUserSide.h; sourceTree = "<group>"; };
+		15A7B6721BAD01B600ED3A6F /* libpthread.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libpthread.tbd; path = usr/lib/libpthread.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,7 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				152FA7531BA5FDFD0000E9D3 /* libpthread.dylib in Frameworks */,
+				15A7B6731BAD01B600ED3A6F /* libpthread.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -55,7 +55,7 @@
 		15131E381BA5FA5D00667F73 = {
 			isa = PBXGroup;
 			children = (
-				152FA7511BA5FC4D0000E9D3 /* libpthread.dylib */,
+				15A7B6721BAD01B600ED3A6F /* libpthread.tbd */,
 				15131E431BA5FA5D00667F73 /* ElevatorPthreads */,
 				15131E421BA5FA5D00667F73 /* Products */,
 			);

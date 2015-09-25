@@ -10,47 +10,89 @@
 #include<pthread.h>
 #include<stdlib.h>
 #include<unistd.h>
+#include "monitorElevatorSide.h"
+#include "monitorUserSide.h"
 
 pthread_t tid[2];
 
-void* doSomeThing(void *arg)
+void* elevator(void *arg)
 {
-    unsigned long i = 0;
-    pthread_t id = pthread_self();
+    ElevatorMonitor* monitor = (ElevatorMonitor*)arg;
+    int next_floor;
+    int current_floor;
+    while (!elevator_should_end(monitor)) {
+        next_floor = elevator_get_next_floor(monitor);
+        printf("Next Floor -> %d\n", next_floor);
+        current_floor = elevator_get_current_floor(monitor);
+        if (next_floor == current_floor) {
+            elevator_open_doors(monitor);
+            elevator_wait_on_floor(monitor);
+            elevator_close_doors(monitor);
+//            elevator_move(monitor, elevator_get_current_movement_state(monitor));
+        }else{
+            if (next_floor > current_floor) {
+                elevator_move(monitor, UP);
+            }
+            else{
+                elevator_move(monitor, DOWN);
+            }
+            
+        }
+    }
     
+    printf("Elevator end\n");
+    return 0;
+}
 
-    if(pthread_equal(id,tid[0]))
-    {
-        sleep(2);
-        printf("\n First thread processing\n");
-    }
-    else
-    {
-        sleep(1);
-        printf("\n Second thread processing\n");
+void* person(void *arg)
+{
+    ElevatorMonitor* monitor = (ElevatorMonitor*)arg;
+    
+    int number_of_floor_to_visit = 2;
+    
+    int floors[2] = {1, 3};
+    int visit_time[2] = {3, 5};
+    int current_floor = 0;
+    
+    for (int i = 0; i < number_of_floor_to_visit; i++) {
+        person_travel(monitor, current_floor, floors[i]);
+        printf("Visitando %d\n", floors[i]);
+        current_floor = floors[i];
+        person_visit(visit_time[i]);
     }
     
-    //for(i=0; i<(0xFFFFFFFF);i++);
+    
+    person_end(monitor);
+    
+    
     
     return NULL;
 }
 
+
 int main(void)
 {
-    int i = 0;
-    int err;
+//    int i = 0;
+//    int err;
     
-    while(i < 2)
-    {
-        err = pthread_create(&(tid[i]), NULL, &doSomeThing, NULL);
-        if (err != 0)
-            printf("\ncan't create thread :[%s]", strerror(err));
-        else
-            printf("\n Thread created successfully\n");
-        
-        i++;
-    }
+    printf("Starting \n");
+    ElevatorMonitor* monitor = new_elevator_monitor(3, 5, 1);
     
+    pthread_t  elevador, pessoa;
+    pthread_create(&elevador, NULL, elevator, (void*)monitor);
+    pthread_create(&pessoa, NULL, person, (void*)monitor);
+//    while(i < 2)
+//    {
+//        err = pthread_create(&(tid[i]), NULL, elevator, NULL);
+//        if (err != 0)
+//            printf("\ncan't create thread :[%s]", strerror(err));
+//        else
+//            printf("\n Thread created successfully\n");
+//        
+//        i++;
+//    }
+    pthread_join(elevador, NULL);
+    pthread_join(pessoa, NULL);
     sleep(5);
     return 0;
 }
