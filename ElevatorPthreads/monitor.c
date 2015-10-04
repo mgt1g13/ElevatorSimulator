@@ -90,7 +90,7 @@ ElevatorMonitor* new_elevator_monitor(int capacity, int numberOfFloors, int numb
     new_monitor->outside_panels = (outsidePanel**)malloc(numberOfFloors*sizeof(outsidePanel*));
     for (int i = 0; i < numberOfFloors ; i++) {
         new_monitor->outside_panels[i] = new_outsidePanel();
-        printf("%d\n", new_monitor->outside_panels[i]);
+//        printf("%d\n", new_monitor->outside_panels[i]);
     }
     
     return new_monitor;
@@ -141,6 +141,10 @@ void elevator_wait_on_floor(ElevatorMonitor* monitor){
 void elevator_open_doors(ElevatorMonitor* monitor){
     pthread_mutex_lock(&monitor->monitorGlobalLock);
     
+//    static int aux = 0;
+    
+//    printf("Openning doors on floor -> %d\n", monitor->currentFloor);
+    
     monitor->doorState = DOOR_OPEN;
     
     //Signals Client waiting for the elevator on the current floor
@@ -161,7 +165,7 @@ void elevator_open_doors(ElevatorMonitor* monitor){
         
     }
     if(monitor->movementState == DOWN){
-        outsidePanel_turn_off_up_button(monitor->outside_panels[monitor->currentFloor]);
+        outsidePanel_turn_off_down_button(monitor->outside_panels[monitor->currentFloor]);
         //Avisa quem quiser descer
         pthread_cond_signal(monitor->floorDownConditions + monitor->currentFloor);
     }
@@ -181,12 +185,20 @@ int elevator_get_next_floor(ElevatorMonitor *monitor){
         if (monitor->movementState == UP) {
             for (int i = monitor->currentFloor; i < monitor->numberOfFloors; i++) {
                 if (outsidePanel_is_up_button_on(monitor->outside_panels[i]) || insidePanel_is_button_on(monitor->inside_panel, i)) {
+                  //  printf("i -> %d -> %d\n", i,outsidePanel_is_up_button_on(monitor->outside_panels[i]));
                     pthread_mutex_unlock(&monitor->monitorGlobalLock);
                     return i;
                 }
             }
             for (int i = monitor->currentFloor; i >= 0; i--) {
                 if (outsidePanel_is_down_button_on(monitor->outside_panels[i]) || insidePanel_is_button_on(monitor->inside_panel, i)) {
+                    pthread_mutex_unlock(&monitor->monitorGlobalLock);
+                    return i;
+                }
+            }
+            for (int i = monitor->currentFloor; i >= 0; i--) {
+                if (outsidePanel_is_up_button_on(monitor->outside_panels[i]) || insidePanel_is_button_on(monitor->inside_panel, i)) {
+//                    printf("i -> %d -> %d\n", i,outsidePanel_is_up_button_on(monitor->outside_panels[i]));
                     pthread_mutex_unlock(&monitor->monitorGlobalLock);
                     return i;
                 }
@@ -197,6 +209,12 @@ int elevator_get_next_floor(ElevatorMonitor *monitor){
         if (monitor->movementState == DOWN) {
             for (int i = monitor->currentFloor; i >= 0; i--) {
                 if (outsidePanel_is_down_button_on(monitor->outside_panels[i]) || insidePanel_is_button_on(monitor->inside_panel, i)) {
+                    pthread_mutex_unlock(&monitor->monitorGlobalLock);
+                    return i;
+                }
+            }
+            for (int i = monitor->currentFloor; i < monitor->numberOfFloors; i++) {
+                if (outsidePanel_is_up_button_on(monitor->outside_panels[i]) || insidePanel_is_button_on(monitor->inside_panel, i)) {
                     pthread_mutex_unlock(&monitor->monitorGlobalLock);
                     return i;
                 }
@@ -213,7 +231,7 @@ int elevator_get_next_floor(ElevatorMonitor *monitor){
         printf("OH NOS, I HAS NO FLOORS TO GO :/\n");
         //Espera por um andar
         pthread_cond_wait(&monitor->hasFloorToGo, &monitor->monitorGlobalLock);
-        printf("Got signaled!");
+        printf("Got signaled!\n");
     
     }
 
@@ -236,6 +254,12 @@ direction elevator_get_current_movement_state(ElevatorMonitor* monitor){
     
 }
 
+void elevator_set_current_movement_state(ElevatorMonitor* monitor, direction dir){
+    pthread_mutex_lock(&monitor->monitorGlobalLock);
+    monitor->movementState = dir;
+    pthread_mutex_unlock(&monitor->monitorGlobalLock);
+    
+}
 
 //Should be called from within a mutex block locked on the globalMonitor mutex
 void _move(ElevatorMonitor* monitor, direction dir){
@@ -251,8 +275,9 @@ void _move(ElevatorMonitor* monitor, direction dir){
     ts.tv_sec += SECONDS_BETWEEN_FLOORS;
     
     pthread_cond_timedwait(&monitor->timedWait, &monitor->monitorGlobalLock, &ts);
-    printf("Dir - > %d\n", dir);
+  //  printf("Dir - > %d\n", dir);
     monitor->currentFloor += dir;
+//    printf("In floor %d\n", monitor->currentFloor);
     
 }
 
@@ -302,7 +327,7 @@ void person_travel(ElevatorMonitor* monitor, int person_current_floor, int desti
     int inside = 0;
     //printf("person -> %d\n", monitor->currentFloor == person_current_floor && monitor->doorState == DOOR_OPEN);
     if(monitor->currentFloor == person_current_floor && monitor->doorState == DOOR_OPEN){
-           // printf("Pressed the button for my floor\n");
+        //printf("Pressed the button for my floor\n");
         inside = 1;
     }
 
@@ -316,6 +341,7 @@ void person_travel(ElevatorMonitor* monitor, int person_current_floor, int desti
                 pthread_cond_signal(&monitor->hasFloorToGo);
             }
             dir = UP;
+            printf("Button up -> %d\n", outsidePanel_is_up_button_on(monitor->outside_panels[person_current_floor]));
             pthread_cond_wait(monitor->floorUpConditions+person_current_floor, &monitor->monitorGlobalLock);
             
         }
@@ -351,13 +377,15 @@ void person_travel(ElevatorMonitor* monitor, int person_current_floor, int desti
     printf("Entrei!\n");
     //Aperta o botao para o andar de destino
     insidePanel_press_button(monitor->inside_panel, destiny);
-    //printf("ta apertado? %d\n",insidePanel_is_button_on(monitor->inside_panel, destiny));
+    printf("ta apertado %d ? %d\n", destiny, insidePanel_is_button_on(monitor->inside_panel, destiny));
     pthread_cond_signal(&monitor->hasFloorToGo);
     printf("Sinalizei!\n");
     
     printf("Esperando\n");
     //Espera chegar no andar
     pthread_cond_wait(monitor->floorLeaveConditions+destiny, &monitor->monitorGlobalLock);
+    
+    monitor->people_inside--;
     
     //Sai, avisa mais alguem pra sair
     pthread_cond_signal(monitor->floorLeaveConditions+destiny);

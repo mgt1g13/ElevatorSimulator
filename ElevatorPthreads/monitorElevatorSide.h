@@ -19,5 +19,6 @@ void elevator_open_doors(ElevatorMonitor* monitor);
 int elevator_get_current_floor(ElevatorMonitor* monitor);
 direction elevator_get_current_movement_state(ElevatorMonitor* monitor);
 void elevator_wait_on_floor(ElevatorMonitor* monitor);
+void elevator_set_current_movement_state(ElevatorMonitor* monitor, direction dir);
 
 #endif
