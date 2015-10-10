@@ -12,6 +12,7 @@
 		152FA75A1BA6146C0000E9D3 /* outsidePanel.c in Sources */ = {isa = PBXBuildFile; fileRef = 152FA7581BA6146C0000E9D3 /* outsidePanel.c */; };
 		152FA75D1BA6148D0000E9D3 /* insidePanel.c in Sources */ = {isa = PBXBuildFile; fileRef = 152FA75B1BA6148D0000E9D3 /* insidePanel.c */; };
 		15A7B6731BAD01B600ED3A6F /* libpthread.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 15A7B6721BAD01B600ED3A6F /* libpthread.tbd */; };
+		15AC77DF1BC98E3B00D9C696 /* buffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 15AC77DE1BC98E3B00D9C696 /* buffer.c */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -38,6 +39,8 @@
 		15322E531BA625EF00D2F29F /* monitorElevatorSide.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = monitorElevatorSide.h; sourceTree = "<group>"; };
 		15322E541BA6260800D2F29F /* monitorUserSide.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = monitorUserSide.h; sourceTree = "<group>"; };
 		15A7B6721BAD01B600ED3A6F /* libpthread.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libpthread.tbd; path = usr/lib/libpthread.tbd; sourceTree = SDKROOT; };
+		15AC77DD1BC98E2A00D9C696 /* buffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = buffer.h; sourceTree = "<group>"; };
+		15AC77DE1BC98E3B00D9C696 /* buffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = buffer.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +84,8 @@
 				152FA75C1BA6148D0000E9D3 /* insidePanel.h */,
 				15322E531BA625EF00D2F29F /* monitorElevatorSide.h */,
 				15322E541BA6260800D2F29F /* monitorUserSide.h */,
+				15AC77DD1BC98E2A00D9C696 /* buffer.h */,
+				15AC77DE1BC98E3B00D9C696 /* buffer.c */,
 			);
 			path = ElevatorPthreads;
 			sourceTree = "<group>";
@@ -144,6 +149,7 @@
 				152FA7571BA5FEBB0000E9D3 /* monitor.c in Sources */,
 				15131E451BA5FA5E00667F73 /* main.c in Sources */,
 				152FA75D1BA6148D0000E9D3 /* insidePanel.c in Sources */,
+				15AC77DF1BC98E3B00D9C696 /* buffer.c in Sources */,
 				152FA75A1BA6146C0000E9D3 /* outsidePanel.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
