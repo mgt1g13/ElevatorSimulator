@@ -31,6 +31,8 @@
 #define TIME_FOR_PEOPLE_TO_LEAVE 1
 #define PEOPLE_ENTER_TIME 1
 
+#define TIME_FACTOR (1/1000000000)
+
 
 
 struct monitor{
@@ -51,6 +53,7 @@ struct monitor{
     int capacity;
     int numberOfFloors;
     int people_inside;
+    time_t start_time;
     
 };
 
@@ -92,6 +95,7 @@ ElevatorMonitor* new_elevator_monitor(int capacity, int numberOfFloors, int numb
         new_monitor->outside_panels[i] = new_outsidePanel();
 //        printf("%d\n", new_monitor->outside_panels[i]);
     }
+    time(&new_monitor->start_time);
     
     return new_monitor;
 }
@@ -283,10 +287,8 @@ void _move(ElevatorMonitor* monitor, direction dir){
 
 
 void _elevator_move_between_floors(ElevatorMonitor* monitor, direction dir){
-    
     _move(monitor, dir);
     monitor->movementState = dir;
-    
 }
 
 
@@ -395,9 +397,9 @@ void person_travel(ElevatorMonitor* monitor, int person_current_floor, int desti
 }
 
 
-void person_visit(int seconds){
+void person_visit(int miliseconds){
     
-    sleep(seconds);
+    usleep(miliseconds*1000);
     
 }
 

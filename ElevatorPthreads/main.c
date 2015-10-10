@@ -29,7 +29,7 @@ void* elevator(void *arg)
         printf("Next Floor -> %d\n", next_floor);
         current_floor = elevator_get_current_floor(monitor);
 
-        if (next_floor == current_floor) {
+        if (next_floor == current_floor && should_change_direction < 2) {
             elevator_open_doors(monitor);
             elevator_wait_on_floor(monitor);
             if(should_change_direction == 0){
@@ -45,8 +45,9 @@ void* elevator(void *arg)
                     elevator_set_current_movement_state(monitor, UP);
                 }
             }
+
+        }else if(should_change_direction < 2){
             elevator_close_doors(monitor);
-        }else{
             should_change_direction = 0;
             if (next_floor > current_floor) {
                 elevator_move(monitor, UP);
@@ -55,6 +56,10 @@ void* elevator(void *arg)
                 elevator_move(monitor, DOWN);
             }
             
+        }
+        else{
+            elevator_close_doors(monitor);
+            elevator_move(monitor, elevator_get_current_movement_state(monitor));
         }
     }
     return 0;
