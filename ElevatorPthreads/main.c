@@ -189,7 +189,7 @@ int main(void)
     for(int i = 0; i < number_of_clients ; i ++){
         printf("%d 0 E 0\n", i+1);
     }
-    printf("0 0 A 0\n");
+//    printf("0 0 A 0\n");
 
     
     pthread_t elevador;
@@ -205,6 +205,9 @@ int main(void)
             scanf("%d", args[i]->floor + j);
             scanf("%d", args[i]->tempo_visita + j);
         }
+        args[i]->floor[args[i]->itinerary_size] = 0;
+        args[i]->tempo_visita[args[i]->itinerary_size] = 0;
+        args[i]->itinerary_size++;
 
         pthread_create(clients + i, NULL, person3, args[i]);
     }

@@ -68,7 +68,7 @@ ElevatorMonitor* new_elevator_monitor(int capacity, int numberOfFloors, int numb
    
     new_monitor->numberOfFloors = numberOfFloors;
     new_monitor->capacity = capacity;
-    new_monitor->doorState  = DOOR_OPEN;
+    new_monitor->doorState  = DOOR_CLOSED;
     new_monitor->currentFloor = TERREO;
     new_monitor->people_inside = 0;
     new_monitor->movementState = UP;
@@ -236,12 +236,14 @@ int elevator_get_next_floor(ElevatorMonitor *monitor){
                     return i;
                 }
             }
-            for (int i = monitor->currentFloor; i <monitor->currentFloor; i++) {
+            
+            for (int i = monitor->currentFloor; i <monitor->numberOfFloors; i++) {
                 if (outsidePanel_is_down_button_on(monitor->outside_panels[i]) || insidePanel_is_button_on(monitor->inside_panel, i)) {
                     pthread_mutex_unlock(&monitor->monitorGlobalLock);
                     return i;
                 }
             }
+
         }
         
         if (monitor->movementState == DOWN) {
@@ -271,6 +273,8 @@ int elevator_get_next_floor(ElevatorMonitor *monitor){
             }
             
         }
+        
+        
         
         //Espera por um andar
         pthread_cond_wait(&monitor->hasFloorToGo, &monitor->monitorGlobalLock);
