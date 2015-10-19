@@ -142,7 +142,9 @@ void _wait(ElevatorMonitor* monitor, int seconds){
 void elevator_wait_on_floor(ElevatorMonitor* monitor){
     pthread_mutex_lock(&monitor->monitorGlobalLock);
     
+//    buffer_write(NULL, 0, monitor->start_time, 'B', monitor->currentFloor);
     _wait(monitor, PEOPLE_ENTER_TIME);
+//    buffer_write(NULL, 0, monitor->start_time, 'E', monitor->currentFloor);
     
     pthread_mutex_unlock(&monitor->monitorGlobalLock);
 }
@@ -160,9 +162,17 @@ void elevator_open_doors(ElevatorMonitor* monitor, buffer* buff){
     //Signals Client waiting for the elevator on the current floor
     pthread_cond_signal(monitor->floorLeaveConditions + monitor->currentFloor);
     
-    buffer_write(buff, 0, monitor->start_time, 'i', monitor->currentFloor);
     
-    insidePanel_turn_off_button(monitor->inside_panel, monitor->currentFloor);
+    if (insidePanel_is_button_on(monitor->inside_panel, monitor->currentFloor)) {
+        buffer_write(buff, 0, monitor->start_time, 'i', monitor->currentFloor);
+        
+        insidePanel_turn_off_button(monitor->inside_panel, monitor->currentFloor);
+
+    }
+    
+//    buffer_write(buff, 0, monitor->start_time, 'i', monitor->currentFloor);
+//    
+//    insidePanel_turn_off_button(monitor->inside_panel, monitor->currentFloor);
 
     //Wait for 1 second so clients can leave
     _wait(monitor, TIME_FOR_PEOPLE_TO_LEAVE);
@@ -172,17 +182,13 @@ void elevator_open_doors(ElevatorMonitor* monitor, buffer* buff){
     
     
     if(monitor->movementState == UP){
-        
-        
+
+//        printf("is up button -> %d\n", outsidePanel_is_up_button_on(monitor->outside_panels[monitor->currentFloor]));
         if (outsidePanel_is_up_button_on(monitor->outside_panels[monitor->currentFloor])) {
-            buffer_write(buff, 0, monitor->start_time, 'd', monitor->currentFloor);
+            buffer_write(buff, 0, monitor->start_time, 's', monitor->currentFloor);
             outsidePanel_turn_off_up_button(monitor->outside_panels[monitor->currentFloor]);
-            
+
         }
-////        printf("Movement state -> UP\n");
-//        buffer_write(buff, 0, monitor->start_time, 's', monitor->currentFloor);
-//    
-//        outsidePanel_turn_off_up_button(monitor->outside_panels[monitor->currentFloor]);
 
         //Avisa quem quiser subir
         pthread_cond_signal(monitor->floorUpConditions + monitor->currentFloor);
@@ -365,20 +371,33 @@ void person_travel(ElevatorMonitor* monitor, int thread, int person_current_floo
     pthread_mutex_lock(&monitor->monitorGlobalLock);
     
     int inside = 0;
+    if (person_current_floor == destiny) {
+        pthread_mutex_unlock(&monitor->monitorGlobalLock);
+        return;
+    }
 
-    if(monitor->currentFloor == person_current_floor && monitor->doorState == DOOR_OPEN){
+    
+    int dir = UP;
+    if (destiny < person_current_floor) {
+        dir = DOWN;
+    }
+    else{
+        dir = UP;
+    }
+    if(monitor->currentFloor == person_current_floor
+       && monitor->doorState == DOOR_OPEN
+       && monitor->people_inside < monitor->capacity
+       && monitor->movementState == dir){
         inside = 1;
     }
 
-    int dir = UP;
+
     
     while(!inside) {
         //TODO: Transformar em while
         if(person_current_floor < destiny){
             if (!outsidePanel_is_up_button_on(monitor->outside_panels[person_current_floor])) {
-                
                 buffer_write(buff, thread, monitor->start_time, 'S', person_current_floor);
-                
                 outsidePanel_turn_on_up_button(monitor->outside_panels[person_current_floor]);
 
             }
@@ -386,9 +405,10 @@ void person_travel(ElevatorMonitor* monitor, int thread, int person_current_floo
             pthread_cond_signal(&monitor->hasFloorToGo);
             dir = UP;
 
+            buffer_write(buff, thread, monitor->start_time, 'B', monitor->currentFloor);
             pthread_cond_wait(monitor->floorUpConditions+person_current_floor, &monitor->monitorGlobalLock);
-
-//            printf("---> %d is here \n", thread);
+            buffer_write(buff, thread, monitor->start_time, 'E', monitor->currentFloor);
+            
             
         }
         else if(person_current_floor > destiny){
@@ -402,11 +422,12 @@ void person_travel(ElevatorMonitor* monitor, int thread, int person_current_floo
             pthread_cond_signal(&monitor->hasFloorToGo);
             dir = DOWN;
             
+            buffer_write(buff, thread, monitor->start_time, 'B', monitor->currentFloor);
             pthread_cond_wait(monitor->floorDownConditions+person_current_floor, &monitor->monitorGlobalLock);
+            buffer_write(buff, thread, monitor->start_time, 'E', monitor->currentFloor);
             
         }
         
-//        printf("%d is here \n", thread);
         //Pode entrar?
         if(monitor->people_inside < monitor->capacity){
             inside = 1;
@@ -453,7 +474,7 @@ void person_travel(ElevatorMonitor* monitor, int thread, int person_current_floo
 
 void person_visit(int miliseconds){
     
-    sleep(miliseconds);
+    usleep(miliseconds);
     
 }
 

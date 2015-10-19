@@ -11,7 +11,7 @@
 #include <stdio.h>
 
 
-#define TIME_FACTOR (1)
+#define TIME_FACTOR (1000)
 
 struct buffer_t{
     

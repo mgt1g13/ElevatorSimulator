@@ -13,8 +13,24 @@
 #include "monitorElevatorSide.h"
 #include "monitorUserSide.h"
 
+#define FILE_INPUT
+
+
 
 pthread_t tid[2];
+
+
+
+struct clientArgs{
+    ElevatorMonitor *monitor;
+    int id;
+    int floor[50];
+    int tempo_visita[50];
+    int itinerary_size;
+};
+typedef struct clientArgs client_args;
+
+
 
 void* elevator(void *arg)
 {
@@ -87,8 +103,6 @@ void* person(void *arg)
     
     person_end(monitor);
     
-    
-    
     return NULL;
 }
 
@@ -117,9 +131,31 @@ void* person2(void *arg)
     return NULL;
 }
 
+void* person3(void *arg)
+{
+    
+    client_args *args = (client_args*)arg;
+    ElevatorMonitor* monitor = args->monitor;
+    int current_floor = 0;
+    
+    for (int i = 0; i < args->itinerary_size; i++) {
+        person_travel(monitor, args->id, current_floor, args->floor[i], NULL);
+        current_floor = args->floor[i];
+        person_visit(args->tempo_visita[i]);
+    }
+    
+    person_end(monitor);
+    
+    return NULL;
+}
+
+
 
 int main(void)
 {
+    
+    
+#ifndef FILE_INPUT
     ElevatorMonitor* monitor = new_elevator_monitor(3, 5, 1);
     
     printf("1 0 E 0\n");
@@ -136,6 +172,50 @@ int main(void)
     pthread_join(pessoa, NULL);
     pthread_join(pessoa2, NULL);
     printf("0 0 0 0\n");
-    //sleep(5);
+
+    
     return 0;
+#else
+    
+    int number_of_clients;
+    pthread_t clients[100];
+
+    scanf("%d", &number_of_clients);
+    ElevatorMonitor* monitor = new_elevator_monitor(3, 5, 1);
+    
+    client_args *args[100];
+    
+    printf("0 0 E 0\n");
+    for(int i = 0; i < number_of_clients ; i ++){
+        printf("%d 0 E 0\n", i+1);
+    }
+    printf("0 0 A 0\n");
+
+    
+    pthread_t elevador;
+    
+    pthread_create(&elevador, NULL, elevator, (void*)monitor);
+    
+    for(int i = 0 ; i < number_of_clients ; i++){
+        args[i] = (client_args*) malloc(sizeof(client_args));
+        args[i]->id = i+1;
+        args[i]->monitor = monitor;
+        scanf("%d\n", &args[i]->itinerary_size);
+        for (int j = 0; j < args[i]->itinerary_size; j++) {
+            scanf("%d", args[i]->floor + j);
+            scanf("%d", args[i]->tempo_visita + j);
+        }
+
+        pthread_create(clients + i, NULL, person3, args[i]);
+    }
+    
+    
+    for (int i = 0; i < number_of_clients; i++) {
+        pthread_join(clients[i], NULL);
+    }
+    
+    for (int i = 0; i < number_of_clients; i++) {
+        free(args[i]);
+    }
+#endif
 }
