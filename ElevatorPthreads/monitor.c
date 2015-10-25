@@ -27,7 +27,7 @@
 #define DOWN -1
 #define STILL 0
 
-#define SECONDS_BETWEEN_FLOORS 5
+#define SECONDS_BETWEEN_FLOORS 0
 #define TIME_FOR_PEOPLE_TO_LEAVE 1
 #define PEOPLE_ENTER_TIME 1
 
@@ -214,63 +214,69 @@ int elevator_get_next_floor(ElevatorMonitor *monitor){
     pthread_mutex_lock(&monitor->monitorGlobalLock);
   //  printf("LA -> %d\n", monitor->currentFloor);
     while (1) {
-        
+        int full = monitor->people_inside == monitor->capacity;
         
         if (monitor->movementState == UP) {
             for (int i = monitor->currentFloor; i < monitor->numberOfFloors; i++) {
-                if (outsidePanel_is_up_button_on(monitor->outside_panels[i]) || insidePanel_is_button_on(monitor->inside_panel, i)) {
+                if ( (outsidePanel_is_up_button_on(monitor->outside_panels[i]) && !full)  || insidePanel_is_button_on(monitor->inside_panel, i)) {
                     pthread_mutex_unlock(&monitor->monitorGlobalLock);
                     return i;
                 }
             }
-            for (int i = monitor->currentFloor; i >= 0; i--) {
-                if (outsidePanel_is_down_button_on(monitor->outside_panels[i]) || insidePanel_is_button_on(monitor->inside_panel, i)) {
+//            for (int i = monitor->currentFloor; i >= 0; i--) {
+            for (int i = monitor->numberOfFloors-1; i > monitor->currentFloor; i--) {
+                if ((outsidePanel_is_down_button_on(monitor->outside_panels[i])&& !full) || insidePanel_is_button_on(monitor->inside_panel, i)) {
                     pthread_mutex_unlock(&monitor->monitorGlobalLock);
                     return i;
                 }
             }
+//            for (int i = monitor->currentFloor; i >= 0; i--) {
             for (int i = monitor->currentFloor; i >= 0; i--) {
-  
-                if (outsidePanel_is_up_button_on(monitor->outside_panels[i]) || insidePanel_is_button_on(monitor->inside_panel, i)) {
+                if ((outsidePanel_is_down_button_on(monitor->outside_panels[i]) && !full) || insidePanel_is_button_on(monitor->inside_panel, i)) {
                     pthread_mutex_unlock(&monitor->monitorGlobalLock);
                     return i;
                 }
             }
             
-            for (int i = monitor->currentFloor; i <monitor->numberOfFloors; i++) {
-                if (outsidePanel_is_down_button_on(monitor->outside_panels[i]) || insidePanel_is_button_on(monitor->inside_panel, i)) {
+            for (int i = 0; i < monitor->currentFloor; i++) {
+  
+                if ((outsidePanel_is_up_button_on(monitor->outside_panels[i]) && !full) || insidePanel_is_button_on(monitor->inside_panel, i)) {
                     pthread_mutex_unlock(&monitor->monitorGlobalLock);
                     return i;
                 }
             }
+            
+//            for (int i = monitor->currentFloor; i <monitor->numberOfFloors; i++) {
 
         }
         
         if (monitor->movementState == DOWN) {
             for (int i = monitor->currentFloor; i >= 0; i--) {
-                if (outsidePanel_is_down_button_on(monitor->outside_panels[i]) || insidePanel_is_button_on(monitor->inside_panel, i)) {
+                if ((outsidePanel_is_down_button_on(monitor->outside_panels[i]) && !full) || insidePanel_is_button_on(monitor->inside_panel, i)) {
+                    pthread_mutex_unlock(&monitor->monitorGlobalLock);
+                    return i;
+                }
+            }
+//            for (int i = monitor->currentFloor; i < monitor->numberOfFloors; i++) {
+            for (int i = 0; i < monitor->currentFloor; i++) {
+                if ((outsidePanel_is_up_button_on(monitor->outside_panels[i]) && !full) || insidePanel_is_button_on(monitor->inside_panel, i)) {
                     pthread_mutex_unlock(&monitor->monitorGlobalLock);
                     return i;
                 }
             }
             for (int i = monitor->currentFloor; i < monitor->numberOfFloors; i++) {
-                if (outsidePanel_is_up_button_on(monitor->outside_panels[i]) || insidePanel_is_button_on(monitor->inside_panel, i)) {
+                if ((outsidePanel_is_up_button_on(monitor->outside_panels[i]) && !full) || insidePanel_is_button_on(monitor->inside_panel, i)) {
                     pthread_mutex_unlock(&monitor->monitorGlobalLock);
                     return i;
                 }
             }
-            for (int i = monitor->currentFloor; i < monitor->numberOfFloors; i++) {
-                if (outsidePanel_is_down_button_on(monitor->outside_panels[i]) || insidePanel_is_button_on(monitor->inside_panel, i)) {
+            for (int i =  monitor->numberOfFloors-1; i >monitor->currentFloor; i--) {
+                if ((outsidePanel_is_down_button_on(monitor->outside_panels[i]) && !full) || insidePanel_is_button_on(monitor->inside_panel, i)) {
                     pthread_mutex_unlock(&monitor->monitorGlobalLock);
                     return i;
                 }
             }
-            for (int i = monitor->currentFloor; i >= 0; i--) {
-                if (outsidePanel_is_up_button_on(monitor->outside_panels[i]) || insidePanel_is_button_on(monitor->inside_panel, i)) {
-                    pthread_mutex_unlock(&monitor->monitorGlobalLock);
-                    return i;
-                }
-            }
+
             
         }
         
