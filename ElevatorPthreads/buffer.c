@@ -8,10 +8,11 @@
 
 #include "buffer.h"
 #include <stdlib.h>
+//#include <time.h>
 #include <stdio.h>
 
 
-#define TIME_FACTOR (1000)
+#define TIME_FACTOR (1000000)
 
 struct buffer_t{
     
@@ -31,7 +32,8 @@ buffer* new_buffer(void){
 void buffer_write(buffer* buff, int thread, time_t base, char op, int floor){
     time_t now;
     time(&now);
-    printf("%d %d %c %d\n", thread, (int)difftime(now, base)*TIME_FACTOR, op, floor);
-    //sprintf(buff->buff[buff->position], "%d %f %c %d\n", thread, difftime(now, base)*TIME_FACTOR, op, floor);
+    printf("%.10lf\n", difftime(now, base));
+    printf("%d %d %c %d\n", thread, (int)(difftime(now, base)*TIME_FACTOR), op, floor);
+//    printf("%d %f %c %d\n", thread, difftime(now, base)*TIME_FACTOR, op, floor);
     //buff->position++;
 }

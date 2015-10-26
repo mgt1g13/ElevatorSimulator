@@ -31,6 +31,9 @@
 #define TIME_FOR_PEOPLE_TO_LEAVE 100000
 #define PEOPLE_ENTER_TIME 100000
 
+//#define TIME_FOR_PEOPLE_TO_LEAVE 1000
+//#define PEOPLE_ENTER_TIME 1000
+
 
 
 
@@ -56,6 +59,7 @@ struct monitor{
     int capacity;
     int numberOfFloors;
     int people_inside;
+    int* destinies;
     time_t start_time;
     
 };
@@ -76,6 +80,8 @@ ElevatorMonitor* new_elevator_monitor(int capacity, int numberOfFloors, int numb
     
     //Mutex init
     pthread_mutex_init(&(new_monitor->monitorGlobalLock), NULL);
+    
+    new_monitor->destinies = (int*)malloc(sizeof(int)*numberOfFloors);
 
     //Condition variables init
     new_monitor->floorUpConditions = (pthread_cond_t*)malloc(numberOfFloors*sizeof(pthread_cond_t));
@@ -85,6 +91,7 @@ ElevatorMonitor* new_elevator_monitor(int capacity, int numberOfFloors, int numb
         pthread_cond_init(new_monitor->floorUpConditions + i, NULL);
         pthread_cond_init(new_monitor->floorDownConditions + i, NULL);
         pthread_cond_init(new_monitor->floorLeaveConditions + i, NULL);
+        new_monitor->destinies[i] = 0;
     }
     
     pthread_cond_init(&new_monitor->timedWait, NULL);
@@ -109,6 +116,12 @@ ElevatorMonitor* new_elevator_monitor(int capacity, int numberOfFloors, int numb
 
 void elevator_close_doors(ElevatorMonitor* monitor, buffer* buff){
     pthread_mutex_lock(&monitor->monitorGlobalLock);
+    
+    while (monitor->destinies[monitor->currentFloor] != 0) {
+        pthread_mutex_unlock(&monitor->monitorGlobalLock);
+        elevator_wait_on_floor(monitor);
+        pthread_mutex_lock(&monitor->monitorGlobalLock);
+    }
 
     if(monitor->doorState != DOOR_CLOSED){
         buffer_write(buff, 0,  monitor->start_time, 'F', monitor->currentFloor);
@@ -460,6 +473,7 @@ void person_travel(ElevatorMonitor* monitor, int thread, int person_current_floo
     
     //Entra
     monitor->people_inside++;
+    monitor->destinies[destiny]++;
 
     //Aperta o botao para o andar de destino
     buffer_write(buff, thread, monitor->start_time, 'I', destiny);
@@ -472,6 +486,7 @@ void person_travel(ElevatorMonitor* monitor, int thread, int person_current_floo
     
     buffer_write(buff, thread, monitor->start_time, 'V', monitor->currentFloor);
     monitor->people_inside--;
+    monitor->destinies[destiny]--;
     
     //Sai, avisa mais alguem pra sair
     pthread_cond_signal(monitor->floorLeaveConditions+destiny);
