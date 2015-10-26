@@ -101,7 +101,7 @@ void* person(void *arg)
     }
     
     
-    person_end(monitor);
+    person_end(monitor, 1, NULL);
     
     return NULL;
 }
@@ -124,7 +124,7 @@ void* person2(void *arg)
     }
     
     
-    person_end(monitor);
+    person_end(monitor, 2, NULL);
     
     
     
@@ -144,7 +144,7 @@ void* person3(void *arg)
         person_visit(args->tempo_visita[i]);
     }
     
-    person_end(monitor);
+    person_end(monitor, args->id, NULL);
     
     return NULL;
 }
@@ -160,7 +160,7 @@ int main(void)
     
     printf("1 0 E 0\n");
     printf("2 0 E 0\n");
-    printf("0 0 A 0\n");
+//    printf("0 0 A 0\n");
     
     
     pthread_t  elevador, pessoa, pessoa2;

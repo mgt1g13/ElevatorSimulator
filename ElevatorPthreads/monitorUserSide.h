@@ -15,7 +15,7 @@ void person_visit(int miliseconds);
 
 void person_travel(ElevatorMonitor* monitor, int thread, int person_current_floor, int destiny, buffer* buff);
 
-void person_end(ElevatorMonitor* monitor);
+void person_end(ElevatorMonitor* monitor, int thread, buffer* buff);
 
 
 #endif

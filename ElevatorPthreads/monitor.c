@@ -28,8 +28,8 @@
 #define STILL 0
 
 #define SECONDS_BETWEEN_FLOORS 0
-#define TIME_FOR_PEOPLE_TO_LEAVE 1
-#define PEOPLE_ENTER_TIME 1
+#define TIME_FOR_PEOPLE_TO_LEAVE 100000
+#define PEOPLE_ENTER_TIME 100000
 
 
 
@@ -131,8 +131,8 @@ void _wait(ElevatorMonitor* monitor, int seconds){
     
     ts.tv_sec  = tp.tv_sec;
     ts.tv_nsec = tp.tv_usec * 1000;
-    ts.tv_sec += seconds;
-    
+    //ts.tv_sec += seconds;
+    ts.tv_nsec += seconds ;
     pthread_cond_timedwait(&monitor->timedWait, &monitor->monitorGlobalLock, &ts);
     
 }
@@ -439,7 +439,7 @@ void person_travel(ElevatorMonitor* monitor, int thread, int person_current_floo
         }
         
         //Pode entrar?
-        if(monitor->people_inside < monitor->capacity){
+        if(monitor->people_inside < monitor->capacity && monitor->currentFloor == person_current_floor && monitor->doorState == DOOR_OPEN){
             inside = 1;
 
             pthread_cond_signal(&monitor->hasFloorToGo);
@@ -452,8 +452,7 @@ void person_travel(ElevatorMonitor* monitor, int thread, int person_current_floo
                 pthread_cond_signal(monitor->floorDownConditions+person_current_floor);
             }
         }else{
-            sleep(2*TIME_FOR_PEOPLE_TO_LEAVE);
-            
+            _wait(monitor, (2*TIME_FOR_PEOPLE_TO_LEAVE));
         }
     }
     
@@ -484,16 +483,18 @@ void person_travel(ElevatorMonitor* monitor, int thread, int person_current_floo
 
 void person_visit(int miliseconds){
     
-    usleep(miliseconds);
+    usleep(miliseconds/1000);
     
 }
 
 
 
-void person_end(ElevatorMonitor* monitor){
+void person_end(ElevatorMonitor* monitor, int thread, buffer *buff){
     pthread_mutex_lock(&monitor->monitorGlobalLock);
     
     monitor->number_of_clients--;
+    buffer_write(buff, thread, monitor->start_time, 'M', 0);
+    
     
     pthread_mutex_unlock(&monitor->monitorGlobalLock);
 }
