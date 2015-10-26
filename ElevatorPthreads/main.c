@@ -221,5 +221,6 @@ int main(void)
     for (int i = 0; i < number_of_clients; i++) {
         free(args[i]);
     }
+    printf("0 0 0 0\n");
 #endif
 }

@@ -29,11 +29,24 @@ buffer* new_buffer(void){
 }
 
 
-void buffer_write(buffer* buff, int thread, time_t base, char op, int floor){
-    time_t now;
-    time(&now);
-    printf("%.10lf\n", difftime(now, base));
-    printf("%d %d %c %d\n", thread, (int)(difftime(now, base)*TIME_FACTOR), op, floor);
-//    printf("%d %f %c %d\n", thread, difftime(now, base)*TIME_FACTOR, op, floor);
+void buffer_write(buffer* buff, int thread, struct timespec base, char op, int floor){
+    struct timespec now;
+
+#ifdef __MACH__ // OS X
+    clock_serv_t cclock;
+    mach_timespec_t mts;
+    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+    clock_get_time(cclock, &mts);
+    mach_port_deallocate(mach_task_self(), cclock);
+    now.tv_sec = mts.tv_sec;
+    now.tv_nsec = mts.tv_nsec;
+    
+#else
+    clock_gettime(CLOCK_REALTIME, &now);
+#endif
+    
+    printf("%d %lli %c %d\n", thread, (long long)((now.tv_sec-base.tv_sec)*1e7)+ now.tv_nsec - base.tv_nsec, op, floor);
+
+
     //buff->position++;
 }

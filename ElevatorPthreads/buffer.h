@@ -10,9 +10,15 @@
 #define buffer_h
 
 #include <time.h>
+#include <sys/time.h>
+
+#ifdef __MACH__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
 
 typedef struct buffer_t buffer;
 
-void buffer_write(buffer* buff, int thread, time_t time, char op, int floor);
+void buffer_write(buffer* buff, int thread, struct timespec time, char op, int floor);
 
 #endif /* buffer_h */

@@ -16,7 +16,13 @@
 #include <stdlib.h>
 #include <time.h>
 #include <sys/time.h>
+#include <sys/timeb.h>
 #include <unistd.h>
+
+#ifdef __MACH__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
 
 #define DOOR_OPEN 0
 #define DOOR_CLOSED 1
@@ -33,11 +39,6 @@
 
 //#define TIME_FOR_PEOPLE_TO_LEAVE 1000
 //#define PEOPLE_ENTER_TIME 1000
-
-
-
-
-
 
 
 
@@ -60,7 +61,7 @@ struct monitor{
     int numberOfFloors;
     int people_inside;
     int* destinies;
-    time_t start_time;
+    struct timespec start_time;
     
 };
 
@@ -105,8 +106,19 @@ ElevatorMonitor* new_elevator_monitor(int capacity, int numberOfFloors, int numb
         new_monitor->outside_panels[i] = new_outsidePanel();
     }
     
-    time(&new_monitor->start_time);
+//    time(&new_monitor->start_time);
+#ifdef __MACH__ // OS X does not have clock_gettime, use clock_get_time
+    clock_serv_t cclock;
+    mach_timespec_t mts;
+    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+    clock_get_time(cclock, &mts);
+    mach_port_deallocate(mach_task_self(), cclock);
+    new_monitor->start_time.tv_sec = mts.tv_sec;
+    new_monitor->start_time.tv_nsec = mts.tv_nsec;
     
+#else
+    clock_gettime(CLOCK_REALTIME, &new_monitor->start_time);
+#endif
     return new_monitor;
 }
 
