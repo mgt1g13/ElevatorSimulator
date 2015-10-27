@@ -42,6 +42,8 @@ void buffer_write(buffer* buff, int thread, struct timespec base, char op, int f
     struct timespec now;
 
 #ifdef __MACH__ // OS X
+    
+    static long long i = 1;
     clock_serv_t cclock;
     mach_timespec_t mts;
     host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
@@ -49,17 +51,20 @@ void buffer_write(buffer* buff, int thread, struct timespec base, char op, int f
     mach_port_deallocate(mach_task_self(), cclock);
     now.tv_sec = mts.tv_sec;
     now.tv_nsec = mts.tv_nsec;
+    buff->ops[buff->n_ops].timestamp = i++;
     
 #else
     clock_gettime(CLOCK_REALTIME, &now);
+    buff->ops[buff->n_ops].timestamp = ((long long)((now.tv_sec-base.tv_sec)*1e9)+ (now.tv_nsec - base.tv_nsec));
 #endif
     
    //printf("%d %lli %c %d\n", thread, (long long)((now.tv_sec-base.tv_sec)*1e9)+ now.tv_nsec - base.tv_nsec, op, floor);
     
     buff->ops[buff->n_ops].thread = thread;
-//    buff->ops[buff->n_ops].timestamp = ((long long)((now.tv_sec-base.tv_sec)*1e6)+ (now.tv_nsec/1000 - base.tv_nsec/1000));
-     buff->ops[buff->n_ops].timestamp = ((long long)((now.tv_sec-base.tv_sec)*1e9)+ (now.tv_nsec - base.tv_nsec));
-//    buff->ops[buff->n_ops].timestamp = ((now.tv_sec-base.tv_sec)*1e9)+ (now.tv_nsec - base.tv_nsec);
+
+    
+     //buff->ops[buff->n_ops].timestamp = ((long long)((now.tv_sec-base.tv_sec)*1e9)+ (now.tv_nsec - base.tv_nsec));
+
     buff->ops[buff->n_ops].op = op;
     buff->ops[buff->n_ops].floor = floor;
     buff->n_ops++;
