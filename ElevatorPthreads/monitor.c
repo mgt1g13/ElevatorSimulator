@@ -358,7 +358,7 @@ direction elevator_get_current_movement_state(ElevatorMonitor* monitor){
 }
 
 //Muda sentido do movimento
-void elevator_set_current_movement_state(ElevatorMonitor* monitor, direction dir){
+void elevator_set_current_movement_state(ElevatorMonitor* monitor, direction dir, buffer *buff){
     pthread_mutex_lock(&monitor->monitorGlobalLock);
     if (monitor->doorState == DOOR_CLOSED) {
         printf("This function should only be called with open doors");
@@ -368,7 +368,7 @@ void elevator_set_current_movement_state(ElevatorMonitor* monitor, direction dir
     monitor->movementState = dir;
     
     pthread_mutex_unlock(&monitor->monitorGlobalLock);
-    elevator_open_doors(monitor, NULL);
+    elevator_open_doors(monitor, buff);
     elevator_wait_on_floor(monitor);
     
 }
@@ -559,10 +559,11 @@ void person_visit(int miliseconds){
 }
 
 
-
+//Pessoa termina - Morre
 void person_end(ElevatorMonitor* monitor, int thread, buffer *buff){
     pthread_mutex_lock(&monitor->monitorGlobalLock);
     
+
     monitor->number_of_clients--;
     buffer_write(buff, thread, monitor->start_time, 'M', 0);
     
