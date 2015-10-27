@@ -178,7 +178,7 @@ int main(void)
     
     
     elArg.monitor = monitor;
-    elArg.buff = new_buffer();
+    elArg.buff = new_buffer(150000);
     
     //Cria a thread do elevador
     pthread_create(&elevador, NULL, elevator, (void*)&elArg);
@@ -199,7 +199,7 @@ int main(void)
         args[i]->floor[args[i]->itinerary_size] = 0;
         args[i]->tempo_visita[args[i]->itinerary_size] = 0;
         args[i]->itinerary_size++;
-        args[i]->buff = new_buffer();
+        args[i]->buff = new_buffer(700);
 
     }
     
@@ -225,7 +225,6 @@ int main(void)
         free(args[i]);
         
     }
-//    printf("-->%d\n", cont);
     for (int i = 0; i < elArg.buff->n_ops; i++) {
         operations[cont].thread = elArg.buff->ops[i].thread;
         operations[cont].timestamp = elArg.buff->ops[i].timestamp;
@@ -240,7 +239,7 @@ int main(void)
 
     
     for (int i = 0; i < cont; i++) {
-        printf("%d %lli %c %d\n", operations[i].thread, operations[i].timestamp, operations[i].op, operations[i].floor);
+     //   printf("%d %lli %c %d\n", operations[i].thread, operations[i].timestamp, operations[i].op, operations[i].floor);
     }
 
     //Print final

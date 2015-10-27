@@ -35,7 +35,7 @@ typedef struct buffer_t buffer;
 typedef struct op op;
 
 //Aloca buffer
-buffer* new_buffer(void);
+buffer* new_buffer(int max_op);
 
 //Escreve no buffer
 void buffer_write(buffer* buff, int thread, struct timespec time, char op, int floor);

@@ -12,7 +12,7 @@
 		152FA75A1BA6146C0000E9D3 /* outsidePanel.c in Sources */ = {isa = PBXBuildFile; fileRef = 152FA7581BA6146C0000E9D3 /* outsidePanel.c */; };
 		152FA75D1BA6148D0000E9D3 /* insidePanel.c in Sources */ = {isa = PBXBuildFile; fileRef = 152FA75B1BA6148D0000E9D3 /* insidePanel.c */; };
 		15A7B6731BAD01B600ED3A6F /* libpthread.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 15A7B6721BAD01B600ED3A6F /* libpthread.tbd */; };
-		15AC77DF1BC98E3B00D9C696 /* buffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 15AC77DE1BC98E3B00D9C696 /* buffer.c */; settings = {ASSET_TAGS = (); }; };
+		15AC77DF1BC98E3B00D9C696 /* buffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 15AC77DE1BC98E3B00D9C696 /* buffer.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -116,7 +116,7 @@
 		15131E391BA5FA5D00667F73 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0640;
+				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = "Matheus Trindade";
 				TargetAttributes = {
 					15131E401BA5FA5D00667F73 = {
@@ -177,6 +177,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
