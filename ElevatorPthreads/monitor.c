@@ -269,7 +269,7 @@ int elevator_get_next_floor(ElevatorMonitor *monitor){
             
             //Andar mais acima com alguém que queira descer
             for (int i = monitor->numberOfFloors-1; i > monitor->currentFloor; i--) {
-                if ((outsidePanel_is_down_button_on(monitor->outside_panels[i])&& !full) || insidePanel_is_button_on(monitor->inside_panel, i)) {
+                if ((outsidePanel_is_down_button_on(monitor->outside_panels[i])&& !full)){// || insidePanel_is_button_on(monitor->inside_panel, i)) {
                     pthread_mutex_unlock(&monitor->monitorGlobalLock);
                     return i;
                 }
@@ -285,7 +285,7 @@ int elevator_get_next_floor(ElevatorMonitor *monitor){
             
             // O andar mais abaixo com clientes querendo subir
             for (int i = 0; i < monitor->currentFloor; i++) {
-                if ((outsidePanel_is_up_button_on(monitor->outside_panels[i]) && !full) || insidePanel_is_button_on(monitor->inside_panel, i)) {
+                if ((outsidePanel_is_up_button_on(monitor->outside_panels[i]) && !full)){// || insidePanel_is_button_on(monitor->inside_panel, i)) {
                     pthread_mutex_unlock(&monitor->monitorGlobalLock);
                     return i;
                 }
