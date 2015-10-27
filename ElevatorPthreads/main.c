@@ -239,7 +239,7 @@ int main(void)
 
     
     for (int i = 0; i < cont; i++) {
-     //   printf("%d %lli %c %d\n", operations[i].thread, operations[i].timestamp, operations[i].op, operations[i].floor);
+        printf("%d %lli %c %d\n", operations[i].thread, operations[i].timestamp, operations[i].op, operations[i].floor);
     }
 
     //Print final
