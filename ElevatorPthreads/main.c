@@ -178,7 +178,7 @@ int main(void)
     
     
     elArg.monitor = monitor;
-    elArg.buff = new_buffer(150000);
+    elArg.buff = new_buffer(300000);
     
     //Cria a thread do elevador
     pthread_create(&elevador, NULL, elevator, (void*)&elArg);
@@ -208,7 +208,8 @@ int main(void)
         pthread_create(clients + i, NULL, person, args[i]);
     }
     
-    op operations[300000];
+    op *operations = (op*)malloc(90000*sizeof(op));
+    //op operations[300000];
     int cont = 0;
     
     //Espera os clientes morrerem e libera seus argumentos
