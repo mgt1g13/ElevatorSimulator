@@ -19,6 +19,7 @@
 
 typedef struct buffer_t buffer;
 
+//Escreve no buffer
 void buffer_write(buffer* buff, int thread, struct timespec time, char op, int floor);
 
 #endif /* buffer_h */

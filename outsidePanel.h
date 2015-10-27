@@ -11,18 +11,33 @@
 
 #include <stdio.h>
 
+//Interface do painel externo
+
 typedef struct outsidePanel outsidePanel;
 
+
+//Construtor
 outsidePanel* new_outsidePanel();
 
+//Liga botão de subir
 void outsidePanel_turn_on_up_button(outsidePanel* panel);
+
+//Desliga botão de subir
 void outsidePanel_turn_off_up_button(outsidePanel* panel);
+
+//Verifica se o botão de subir está ligado
 int outsidePanel_is_up_button_on(outsidePanel *panel);
 
+//Liga botão de descer
 void outsidePanel_turn_on_down_button(outsidePanel* panel);
+
+//Desliga botão de descer
 void outsidePanel_turn_off_down_button(outsidePanel* panel);
+
+//Verifica se o botão de descer está ligado
 int outsidePanel_is_down_button_on(outsidePanel *panel);
 
+//Libera a memoria do painel
 void outsidePanel_destructor(outsidePanel* panel);
 
 #endif /* defined(__ElevatorPthreads__outsidePanel__) */

@@ -11,10 +11,13 @@
 
 #include "monitor.h"
 
+//Visita o andar atual
 void person_visit(int miliseconds);
 
+//Viaja de elevador
 void person_travel(ElevatorMonitor* monitor, int thread, int person_current_floor, int destiny, buffer* buff);
 
+//Morre
 void person_end(ElevatorMonitor* monitor, int thread, buffer* buff);
 
 

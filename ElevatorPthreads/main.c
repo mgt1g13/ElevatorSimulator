@@ -13,9 +13,6 @@
 #include "monitorElevatorSide.h"
 #include "monitorUserSide.h"
 
-#define FILE_INPUT
-
-
 
 pthread_t tid[2];
 
@@ -31,32 +28,38 @@ struct clientArgs{
 typedef struct clientArgs client_args;
 
 
-
+//Algoritmo do elevador
 void* elevator(void *arg)
 {
     ElevatorMonitor* monitor = (ElevatorMonitor*)arg;
     int next_floor;
     int current_floor;
-    int should_change_direction = 0;
+    int should_change_direction = 0; //Contador auxiliar
     
-    elevator_wait_on_floor(monitor);
+    //elevator_wait_on_floor(monitor);
     
+    //Roda até o programa terminar
     while (1){
+        
+        //Descobre andar atual e o próximo a ser visitado
         next_floor = elevator_get_next_floor(monitor);
         current_floor = elevator_get_current_floor(monitor);
         
+        //Se o proximo andar a parar for igual ao atual
         if (next_floor == current_floor && should_change_direction < 2) {
-
+            
+            //Se o contador é um, é pq, sem se mover, ja teve que parar duas vezes no mesmo andar, logo, deve mudar de sentido
             if (should_change_direction == 1) {
                 
                 if (elevator_get_current_movement_state(monitor) == UP) {
                     elevator_set_current_movement_state(monitor, DOWN);
                 }
                 else{
-
+                    
                     elevator_set_current_movement_state(monitor, UP);
                     
                 }
+                //Senao abre a porta e espera no andar
             }else{
                 elevator_open_doors(monitor,NULL);
                 elevator_wait_on_floor(monitor);
@@ -64,6 +67,7 @@ void* elevator(void *arg)
 
             should_change_direction++;
             
+            //Caso seja diferente, sobe ou desce dependo do proximo andar
         }else if(next_floor != current_floor){
             elevator_close_doors(monitor, NULL);
             should_change_direction = 0;
@@ -74,6 +78,7 @@ void* elevator(void *arg)
                 elevator_move(monitor, DOWN);
             }
         }
+        //Se o contador é dois, já parou para subirem e descerem no andar. Move, independente de quem esteja esperando
         else{
             should_change_direction = 0;
             elevator_close_doors(monitor, NULL);
@@ -83,64 +88,22 @@ void* elevator(void *arg)
     return 0;
 }
 
+
+
+//Código executado por um cliente
 void* person(void *arg)
-{
-    ElevatorMonitor* monitor = (ElevatorMonitor*)arg;
-    
-    int number_of_floor_to_visit = 2;
-    
-    int floors[2] = {1, 3};
-    int visit_time[2] = {6, 0};
-    int current_floor = 0;
-    
-    for (int i = 0; i < number_of_floor_to_visit; i++) {
-        person_travel(monitor, 1 ,current_floor, floors[i], NULL);
-        //printf("Visitando %d\n", floors[i]);
-        current_floor = floors[i];
-        person_visit(visit_time[i]);
-    }
-    
-    
-    person_end(monitor, 1, NULL);
-    
-    return NULL;
-}
-
-void* person2(void *arg)
-{
-    ElevatorMonitor* monitor = (ElevatorMonitor*)arg;
-    
-    int number_of_floor_to_visit = 2;
-    
-    int floors[2] = {2, 4};
-    int visit_time[2] = {7, 0};
-    int current_floor = 0;
-    
-    for (int i = 0; i < number_of_floor_to_visit; i++) {
-        person_travel(monitor, 2,current_floor, floors[i], NULL);
-        //printf("Visitando %d\n", floors[i]);
-        current_floor = floors[i];
-        person_visit(visit_time[i]);
-    }
-    
-    
-    person_end(monitor, 2, NULL);
-    
-    
-    
-    return NULL;
-}
-
-void* person3(void *arg)
 {
     
     client_args *args = (client_args*)arg;
     ElevatorMonitor* monitor = args->monitor;
     int current_floor = 0;
     
+    
     for (int i = 0; i < args->itinerary_size; i++) {
+        //Viaja
         person_travel(monitor, args->id, current_floor, args->floor[i], NULL);
         current_floor = args->floor[i];
+        //Visita
         person_visit(args->tempo_visita[i]);
     }
     
@@ -153,30 +116,6 @@ void* person3(void *arg)
 
 int main(void)
 {
-    
-    
-#ifndef FILE_INPUT
-    ElevatorMonitor* monitor = new_elevator_monitor(3, 5, 1);
-    
-    printf("1 0 E 0\n");
-    printf("2 0 E 0\n");
-//    printf("0 0 A 0\n");
-    
-    
-    pthread_t  elevador, pessoa, pessoa2;
-    pthread_create(&elevador, NULL, elevator, (void*)monitor);
-    pthread_create(&pessoa, NULL, person, (void*)monitor);
-    pthread_create(&pessoa2, NULL, person2, (void*)monitor);
-    
-    
-    pthread_join(pessoa, NULL);
-    pthread_join(pessoa2, NULL);
-    printf("0 0 0 0\n");
-
-    
-    return 0;
-#else
-    
     int number_of_clients;
     pthread_t clients[100];
 
@@ -185,14 +124,19 @@ int main(void)
     
     client_args *args[100];
     
+    //Inicia as threads
     for(int i = 0; i < number_of_clients ; i ++){
         printf("%d 0 E 0\n", i+1);
     }
     
     pthread_t elevador;
     
+    //Cria a thread do elevador
     pthread_create(&elevador, NULL, elevator, (void*)monitor);
     
+    
+    
+    //Cria os clientes com seus respectivos atributos
     for(int i = 0 ; i < number_of_clients ; i++){
         args[i] = (client_args*) malloc(sizeof(client_args));
         args[i]->id = i+1;
@@ -202,25 +146,24 @@ int main(void)
             scanf("%d", args[i]->floor + j);
             scanf("%d", args[i]->tempo_visita + j);
         }
+        //Adiciona uma rota para retornar para o térreo
         args[i]->floor[args[i]->itinerary_size] = 0;
         args[i]->tempo_visita[args[i]->itinerary_size] = 0;
         args[i]->itinerary_size++;
-        
-        //                pthread_create(clients + i, NULL, person3, args[i]);
 
     }
     
+    //Inicia os clientes
     for (int i = 0; i < number_of_clients; i++) {
-        pthread_create(clients + i, NULL, person3, args[i]);
+        pthread_create(clients + i, NULL, person, args[i]);
     }
     
+    //Espera os clientes morrerem e libera seus argumentos
     for (int i = 0; i < number_of_clients; i++) {
         pthread_join(clients[i], NULL);
-    }
-    
-    for (int i = 0; i < number_of_clients; i++) {
         free(args[i]);
     }
+    
+    //Print final
     printf("0 0 0 0\n");
-#endif
 }

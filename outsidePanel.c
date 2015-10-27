@@ -9,6 +9,8 @@
 #include "outsidePanel.h"
 #include <stdlib.h>
 
+//Implementação do painel externo
+
 struct outsidePanel{
     int upButton;
     int downButton;
@@ -20,7 +22,7 @@ outsidePanel* new_outsidePanel(){
     
     outsidePanel* new_panel = (outsidePanel*)malloc(sizeof(outsidePanel));
     
-    //Both buttons are initialized on of position
+    //Desligados
     new_panel->upButton = 0;
     new_panel->downButton = 0;
     

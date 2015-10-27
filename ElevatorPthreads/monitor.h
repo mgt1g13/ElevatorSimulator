@@ -22,6 +22,7 @@ typedef struct monitor ElevatorMonitor;
 
 typedef int direction;
 
+//Construtor do monitor
 ElevatorMonitor* new_elevator_monitor(int capacity, int numberOfFloors, int number_of_clients);
 
 

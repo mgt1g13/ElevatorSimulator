@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-
+//Implementação de um painel interno, com seus botões
 
 
 struct insidePanel{
